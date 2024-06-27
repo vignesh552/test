@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:validation="http://www.mulesoft.org/schema/mule/validation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="08665f02-fbf6-471e-8dc0-0b896849e8e8" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="a656f87d-afa6-4f9c-aa50-b289a1135ee6" >
+		<email:smtp-connection host="smtp.gmail.com" user="vigneshsrv646@gmail.com" password="srwv gtwx oiwy mtdk" >
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<validation:config name="Validation_Config" doc:name="Validation Config" doc:id="a1394da2-7325-4626-9847-8cf577738006" />
+	<flow name="mailapiFlow1" doc:id="c9c343f3-b8d8-4189-a017-91a89314aa66" >
+		<http:listener doc:name="Listener" doc:id="de02fe80-0d8f-471a-8dca-dc10ada84260" config-ref="HTTP_Listener_config" path="/email"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4474c1d0-3148-42c4-bbbd-e5673a929100" message="start logger"/>
+		<set-variable value='#["apple"]' doc:name="variable1" doc:id="d5622e8f-ecaa-44f2-bc2b-d66489a1dbb8" variableName="variable1"/>
+		<set-variable value='#["orange"]' doc:name="variable2" doc:id="8bb9f88f-0e1a-4512-8f77-f083cc3a20df" variableName="variable2"/>
+		<set-variable value='#["mango"]' doc:name="variable3" doc:id="88525880-02a7-435b-bc49-a4345d4d1098" variableName="variable3"/>
+		<raise-error doc:name="Raise error" doc:id="557277fa-fdda-4b04-85d4-4696e3b80a15" type="APP:BADREQ" description="there is an error in the variable" />
+		<ee:transform doc:name="Transform Message" doc:id="85a89150-150d-4eef-a7d5-8be04d38020b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"items" : vars.variable1 ++ vars.variable2 ++ vars.variable3]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<remove-variable doc:name="Remove Variable" doc:id="f54d3643-141c-4e22-991f-8e5c144e30c4" variableName="variabe2"/>
+		<ee:transform doc:name="Transform Message" doc:id="0c786a2d-f3d9-4bb9-9ab0-a056f5dfd867" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="772cdd33-01d7-469a-9ecb-2c8e46978128" message="end logger"/>
+		<error-handler>
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="c21faaa7-36a7-4cb6-abbd-36b88f052ef9" type="ANY">
+				<ee:transform doc:name="Transform Message" doc:id="4f1481a5-bec5-4cde-ac21-a85bbb13825d" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"There is an error message in the set-variable the varible has not configured properly"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<email:send doc:name="Send" doc:id="ab8c2b51-f1b7-48f4-9ac7-20cdabecfd36" config-ref="Email_SMTP" fromAddress="vigneshsrv646@gmail.com" subject="Hi ! there you got some error in your project." >
+					<email:to-addresses >
+						<email:to-address value="warv5746@gmail.com" />
+						<email:to-address value="tjayashreevct.it@gmail.com" />
+					</email:to-addresses>
+					<email:body contentType="text/plain">
+					</email:body>
+				</email:send>
+				<logger level="INFO" doc:name="Logger" doc:id="030b83d4-0d88-4002-a5fc-c8b7ab120f00" message="#[payload]" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
