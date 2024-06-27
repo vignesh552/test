@@ -22,7 +22,7 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 	<flow name="mailapiFlow1" doc:id="c9c343f3-b8d8-4189-a017-91a89314aa66" >
 		<http:listener doc:name="Listener" doc:id="de02fe80-0d8f-471a-8dca-dc10ada84260" config-ref="HTTP_Listener_config" path="/email"/>
 		<logger level="INFO" doc:name="Logger" doc:id="4474c1d0-3148-42c4-bbbd-e5673a929100" message="start logger"/>
-		<set-variable value='#["apple"]' doc:name="variable1" doc:id="d5622e8f-ecaa-44f2-bc2b-d66489a1dbb8" variableName="variable1"/>
+		<set-variable value='#["grapes"]' doc:name="variable1" doc:id="d5622e8f-ecaa-44f2-bc2b-d66489a1dbb8" variableName="variable1"/>
 		<set-variable value='#["orange"]' doc:name="variable2" doc:id="8bb9f88f-0e1a-4512-8f77-f083cc3a20df" variableName="variable2"/>
 		<set-variable value='#["mango"]' doc:name="variable3" doc:id="88525880-02a7-435b-bc49-a4345d4d1098" variableName="variable3"/>
 		<raise-error doc:name="Raise error" doc:id="557277fa-fdda-4b04-85d4-4696e3b80a15" type="APP:BADREQ" description="there is an error in the variable" />
